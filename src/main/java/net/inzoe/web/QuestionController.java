@@ -4,7 +4,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -38,4 +40,17 @@ public class QuestionController {
 
 		return "redirect:/";
 	}
+	
+	@GetMapping("/{id}/show")
+	public String show(@PathVariable Long id, Model model, HttpSession session) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
+			return "redirect:/users/login";
+		}
+		
+		Question question = questionRepository.findOne(id);
+		model.addAttribute("question", question);
+		
+		return "/qna/show";
+	}
+	
 }

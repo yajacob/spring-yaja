@@ -41,14 +41,18 @@ public class UserController {
 			return "redirect:/users/login";
 		}
 		
-		session.setAttribute("sessionedUser", user);
+		if(!user.matchPassword(password)) {
+			return "redirect:/users/login";
+		}
+		
+		session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 		
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("sessionedUser");
+		session.removeAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		
 		return "redirect:/";
 	}
@@ -67,13 +71,16 @@ public class UserController {
 	
 	@GetMapping("/{id}/form")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		Object tempUser = session.getAttribute("sessionedUser");
-		if (tempUser == null) {
+		//Object tempUser = session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
+		//if (tempUser == null) {
+		if (HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/login";
 		}
 		
-		User sessionedUser = (User)tempUser;
-		if (!id.equals(sessionedUser.getId())) {
+		//User sessionedUser = (User)tempUser;
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		//if (!id.equals(sessionedUser.getId())) {
+		if (!sessionedUser.matchId(id)) {
 			throw new IllegalStateException("You can update only your information!");
 		}
 		
@@ -84,13 +91,16 @@ public class UserController {
 	
 	@PutMapping("/{id}/update")
 	public String updateUser(@PathVariable Long id, User updatedUser, HttpSession session) {
-		Object tempUser = session.getAttribute("sessionedUser");
-		if (tempUser == null) {
+		//Object tempUser = session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
+		//if (tempUser == null) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/login";
 		}
 		
-		User sessionedUser = (User)tempUser;
-		if (!id.equals(sessionedUser.getId())) {
+		//User sessionedUser = (User)tempUser;
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		//if (!id.equals(sessionedUser.getId())) {
+		if (!sessionedUser.matchId(id)) {
 			throw new IllegalStateException("You can update only your information!");
 		}
 		

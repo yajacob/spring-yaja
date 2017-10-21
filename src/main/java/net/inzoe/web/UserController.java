@@ -34,17 +34,21 @@ public class UserController {
 	public String loginProc(String userId, String password, HttpSession session) {
 		User user = userRepository.findByUserId(userId);
 		if (user == null) {
-			return "redirect:/users/login";
+			System.out.println("login fail1");
+			return "/users/login";
 		}
 		
 		if (!password.equals(user.getPassword())) {
-			return "redirect:/users/login";
+			System.out.println("login fail2");
+			return "/users/login";
 		}
 		
 		if(!user.matchPassword(password)) {
-			return "redirect:/users/login";
+			System.out.println("login fail3");
+			return "/users/login";
 		}
 		
+		System.out.println("login success");
 		session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 		
 		return "redirect:/";

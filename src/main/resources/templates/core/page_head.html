@@ -64,14 +64,14 @@
         <div class="collapse navbar-collapse" id="navbar-collapse2">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a href="/">Posts</a></li>
-                {{^user}}
+                {{^sessionedUser}}
                 <li><a href="/users/login" role="button">Login</a></li>
                 <li><a href="/users/form" role="button">Sign Up</a></li>
-                {{/user}}
-                {{#user}}
+                {{/sessionedUser}}
+                {{#sessionedUser}}
                 <li><a href="/users/logout" role="button">Logout</a></li>
-                <li><a href="#" role="button">Profile</a></li>
-                {{/user}}
+                <li><a href="/users/{{id}}/form" role="button">Profile</a></li>
+                {{/sessionedUser}}
             </ul>
         </div>
     </div>

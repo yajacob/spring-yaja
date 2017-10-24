@@ -1,9 +1,15 @@
 package net.inzoe.domain;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Question {
@@ -12,23 +18,34 @@ public class Question {
 	@GeneratedValue
 	private Long id;
 
-	@Column(nullable = false)
-	private String writer;
-	
+	@ManyToOne
+	@JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
+	private User writer;
+
 	@Column(nullable = false)
 	private String title;
 
-	@Column(nullable = false, length=2000)
+	@Column(nullable = false, length = 2000)
 	private String contents;
-	
-	public Question() {}
 
-	public Question(String writer, String title, String contents) {
+	private LocalDateTime createDate;
+
+	public Question() {
+	}
+
+	public Question(User writer, String title, String contents) {
 		super();
 		this.writer = writer;
 		this.title = title;
 		this.contents = contents;
+		this.createDate = LocalDateTime.now();
 	}
 
-	
+	public String getCreateDate() {
+		if (createDate == null) {
+			return "";
+		}
+		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+	}
+
 }

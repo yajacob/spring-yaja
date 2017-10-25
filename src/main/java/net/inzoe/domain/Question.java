@@ -2,6 +2,7 @@ package net.inzoe.domain;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 @Entity
 public class Question {
@@ -29,6 +32,10 @@ public class Question {
 	private String contents;
 
 	private LocalDateTime createDate;
+	
+	@OneToMany(mappedBy="question")
+	@OrderBy("id ASC")
+	private List<Answer> answers;
 
 	public Question() {
 	}
@@ -48,6 +55,11 @@ public class Question {
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
 	}
 
+	public int getAnswerCount() {
+		if (this.answers == null) return 0;
+		return this.answers.size();
+	}
+	
 	public void update(String title, String contents) {
 		this.title = title;
 		this.contents = contents;		

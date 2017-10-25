@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import net.inzoe.domain.Answer;
+import net.inzoe.domain.AnswerRepository;
 import net.inzoe.domain.Question;
 import net.inzoe.domain.QuestionRepository;
 import net.inzoe.domain.User;
@@ -19,6 +21,8 @@ import net.inzoe.domain.User;
 public class QuestionController {
 	@Autowired
 	private QuestionRepository questionRepository;
+	@Autowired
+	private AnswerRepository answerRepository;
 
 	@GetMapping("/form")
 	public String form(HttpSession session) {

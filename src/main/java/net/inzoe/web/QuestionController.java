@@ -40,17 +40,79 @@ public class QuestionController {
 
 		return "redirect:/";
 	}
-	
+
 	@GetMapping("/{id}/show")
 	public String show(@PathVariable Long id, Model model, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/login";
 		}
-		
+
 		Question question = questionRepository.findOne(id);
 		model.addAttribute("question", question);
-		
+
 		return "/qna/show";
 	}
-	
+
+	@GetMapping("/{id}/updateForm")
+	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
+			return "redirect:/users/login";
+		}
+
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		Question question = questionRepository.findOne(id);
+		if (!question.isSameWriter(loginUser)) {
+			System.out.println("not same writer");
+			return "redirect:/";
+		}
+
+		model.addAttribute("question", question);
+		return "/qna/updateForm";
+	}
+
+	@PostMapping("/updateFormProc")
+	public String updateFormProc(Long id, String title, String contents, HttpSession session) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
+			return "redirect:/users/login";
+		}
+
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		Question question = questionRepository.findOne(id);
+		// no data found
+		if (question == null) {
+			return "redirect:/";
+		}
+
+		if (!question.isSameWriter(loginUser)) {
+			return "redirect:/";
+		}
+
+		question.update(title, contents);
+		questionRepository.save(question);
+
+		return String.format("redirect:/qna/%d/show", id);
+	}
+
+	@PostMapping("/delete")
+	public String deleteProc(Long id, HttpSession session) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
+			return "redirect:/users/login";
+		}
+
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		Question question = questionRepository.findOne(id);
+		// no data found
+		if (question == null) {
+			return "redirect:/";
+		}
+
+		if (!question.isSameWriter(loginUser)) {
+			return "redirect:/";
+		}
+
+		questionRepository.delete(id);
+
+		return "redirect:/";
+	}
+
 }

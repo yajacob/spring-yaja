@@ -17,8 +17,7 @@
 						</div>
 						<div class="article-header-text">
 							<a href="/users/92/kimmunsu" class="article-author-name">{{writer.userId}}</a>
-							<a href="/questions/413" class="article-header-time" title="퍼머링크">
-								{{getCreateDate}}<i class="icon-link"></i>
+							<a href="/questions/413" class="article-header-time" title="Created Date">{{getCreateDate}}<i class="icon-link"></i>
 							</a>
 						</div>
 					</div>
@@ -26,10 +25,11 @@
 					<div class="article-util">
 						<ul class="article-util-list">
 							<li><a class="link-modify-article"
-								href="/questions/423/form">Modify</a></li>
+								href="/qna/{{id}}/updateForm">Modify</a></li>
 							<li>
-								<form class="form-delete" action="/questions/423" method="POST">
-									<input type="hidden" name="_method" value="DELETE">
+								<form class="form-delete" action="/qna/delete" method="POST">
+									<input type="hidden" name="id" value="{{id}}"/>
+									<!--input type="hidden" name="_method" value="DELETE"-->
 									<button class="link-delete-article" type="submit">Delete</button>
 								</form>
 							</li>
@@ -65,12 +65,12 @@
 								<div class="article-util">
 									<ul class="article-util-list">
 										<li><a class="link-modify-article"
-											href="/questions/413/answers/1405/form">수정</a></li>
+											href="/questions/{{id}}/form">Modify</a></li>
 										<li>
 											<form class="delete-answer-form"
 												action="/questions/413/answers/1405" method="POST">
 												<input type="hidden" name="_method" value="DELETE">
-												<button type="submit" class="delete-answer-button">삭제</button>
+												<button type="submit" class="delete-answer-button">Delete</button>
 											</form>
 										</li>
 									</ul>

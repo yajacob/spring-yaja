@@ -7,3 +7,13 @@ String.prototype.format = function() {
         ;
   });
 };
+
+
+$(".submit-answer input[type=submit]").click(addAnswer);
+
+function addAnswer(e) {
+	e.preventDefault();
+	console.log("clicked!!");
+	var queryString = $(".answer-write").serialize();
+	console.log("query:" + queryString);
+}

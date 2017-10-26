@@ -32,6 +32,18 @@ public class QuestionController {
 		return "/qna/form";
 	}
 
+	private boolean hasPermission(HttpSession session, Question question) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
+			throw new IllegalStateException("You need to login!");
+		}
+
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		if (!question.isSameWriter(loginUser)) {
+			throw new IllegalStateException("You can only deal with articles you write!");
+		}
+		return true;
+	}
+
 	@PostMapping("/formProc")
 	public String formProc(String title, String contents, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
@@ -59,64 +71,43 @@ public class QuestionController {
 
 	@GetMapping("/{id}/updateForm")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "redirect:/users/login";
+		try {
+			Question question = questionRepository.findOne(id);
+			hasPermission(session, question);
+			model.addAttribute("question", question);
+			return "/qna/updateForm";
+		} catch (IllegalStateException e) {
+			model.addAttribute("errorMessage", e.getMessage());
+			return "/users/login";
 		}
-
-		User loginUser = HttpSessionUtils.getUserFromSession(session);
-		Question question = questionRepository.findOne(id);
-		if (!question.isSameWriter(loginUser)) {
-			System.out.println("not same writer");
-			return "redirect:/";
-		}
-
-		model.addAttribute("question", question);
-		return "/qna/updateForm";
 	}
 
 	@PostMapping("/updateFormProc")
-	public String updateFormProc(Long id, String title, String contents, HttpSession session) {
-		if (!HttpSessionUtils.isLoginUser(session)) {
+	public String updateFormProc(Long id, String title, String contents, HttpSession session, Model model) {
+		try {
+			Question question = questionRepository.findOne(id);
+			hasPermission(session, question);
+			question.update(title, contents);
+			questionRepository.save(question);
+			return String.format("redirect:/qna/%d/show", id);
+		} catch (IllegalStateException e) {
+			model.addAttribute("errorMessage", e.getMessage());
 			return "redirect:/users/login";
 		}
-
-		User loginUser = HttpSessionUtils.getUserFromSession(session);
-		Question question = questionRepository.findOne(id);
-		// no data found
-		if (question == null) {
-			return "redirect:/";
-		}
-
-		if (!question.isSameWriter(loginUser)) {
-			return "redirect:/";
-		}
-
-		question.update(title, contents);
-		questionRepository.save(question);
-
-		return String.format("redirect:/qna/%d/show", id);
 	}
 
 	@PostMapping("/delete")
-	public String deleteProc(Long id, HttpSession session) {
-		if (!HttpSessionUtils.isLoginUser(session)) {
+	public String deleteProc(Long id, HttpSession session, Model model) {
+		try {
+			User loginUser = HttpSessionUtils.getUserFromSession(session);
+			Question question = questionRepository.findOne(id);
+			hasPermission(session, question);
+			questionRepository.delete(id);
+			return "redirect:/";
+		} catch (IllegalStateException e) {
+			model.addAttribute("errorMessage", e.getMessage());
 			return "redirect:/users/login";
 		}
-
-		User loginUser = HttpSessionUtils.getUserFromSession(session);
-		Question question = questionRepository.findOne(id);
-		// no data found
-		if (question == null) {
-			return "redirect:/";
-		}
-
-		if (!question.isSameWriter(loginUser)) {
-			return "redirect:/";
-		}
-
-		questionRepository.delete(id);
-
-		return "redirect:/";
 	}
 
 }

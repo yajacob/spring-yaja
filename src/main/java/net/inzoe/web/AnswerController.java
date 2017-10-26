@@ -35,6 +35,10 @@ public class AnswerController {
 		answerRepository.save(newAnswer);
 		
 		return "redirect:/qna/{qid}/show";
-		//return String.format("redirect:/qna/%d/show", qid);
+	}
+	
+	@PostMapping("/delete")
+	public String delete(@PathVariable Long qid, String contents, HttpSession session) {
+		return "redirect:/qna/{qid}/show";
 	}
 }

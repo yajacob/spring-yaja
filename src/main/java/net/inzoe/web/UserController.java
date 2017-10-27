@@ -15,19 +15,19 @@ import net.inzoe.domain.User;
 import net.inzoe.domain.UserRepository;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
 	@GetMapping("/form")
 	public String form() {
-		return "/users/form";
+		return "/user/form";
 	}
 
 	@GetMapping("/login")
 	public String login() {
-		return "/users/login";
+		return "/user/login";
 	}
 	
 	@PostMapping("/loginProc")
@@ -35,12 +35,12 @@ public class UserController {
 		User user = userRepository.findByUserId(userId);
 		if (user == null) {
 			System.out.println("login fail1");
-			return "/users/login";
+			return "/user/login";
 		}
 		
 		if(!user.matchPassword(password)) {
 			System.out.println("login fail3");
-			return "/users/login";
+			return "/user/login";
 		}
 		
 		System.out.println("login success");
@@ -59,13 +59,13 @@ public class UserController {
 	@PostMapping("/create")
 	public String create(User user) {
 		userRepository.save(user);
-		return "redirect:/users/list";
+		return "redirect:/user/list";
 	}
 	
 	@GetMapping("/list")
 	public String list(Model model) {
 		model.addAttribute("users", userRepository.findAll());
-		return "/users/list";
+		return "/user/list";
 	}
 	
 	@GetMapping("/{id}/form")
@@ -73,7 +73,7 @@ public class UserController {
 		//Object tempUser = session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		//if (tempUser == null) {
 		if (HttpSessionUtils.isLoginUser(session)) {
-			return "redirect:/users/login";
+			return "redirect:/user/login";
 		}
 		
 		//User sessionedUser = (User)tempUser;
@@ -85,7 +85,7 @@ public class UserController {
 		
 		User user = userRepository.findOne(id);
 		model.addAttribute("user", user);
-		return "/users/updateForm";
+		return "/user/updateForm";
 	}
 	
 	@PutMapping("/{id}/update")
@@ -93,7 +93,7 @@ public class UserController {
 		//Object tempUser = session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		//if (tempUser == null) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "redirect:/users/login";
+			return "redirect:/user/login";
 		}
 		
 		//User sessionedUser = (User)tempUser;
@@ -106,7 +106,7 @@ public class UserController {
 		User user = userRepository.findOne(id);
 		user.update(updatedUser);
 		userRepository.save(user);
-		return "redirect:/users/list";
+		return "redirect:/user/list";
 	}
 	
 }

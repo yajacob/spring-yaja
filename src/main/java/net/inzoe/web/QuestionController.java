@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import net.inzoe.domain.Answer;
 import net.inzoe.domain.AnswerRepository;
 import net.inzoe.domain.Question;
 import net.inzoe.domain.QuestionRepository;
+import net.inzoe.domain.Result;
 import net.inzoe.domain.User;
 
 @Controller
@@ -27,27 +27,37 @@ public class QuestionController {
 	@GetMapping("/form")
 	public String form(HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "/users/login";
+			return "/user/login";
 		}
 		return "/qna/form";
 	}
 
-	private boolean hasPermission(HttpSession session, Question question) {
+	private Result valid(HttpSession session, Question question) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
-			throw new IllegalStateException("You need to login!");
+			return Result.fail("You need to login!");
 		}
 
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		if (!question.isSameWriter(loginUser)) {
-			throw new IllegalStateException("You can only deal with articles you write!");
+			return Result.fail("You can only deal with articles you write!");
 		}
-		return true;
+		return Result.ok();
 	}
 
+	/*
+	 * private boolean hasPermission(HttpSession session, Question question) { if
+	 * (!HttpSessionUtils.isLoginUser(session)) { throw new
+	 * IllegalStateException("You need to login!"); }
+	 * 
+	 * User loginUser = HttpSessionUtils.getUserFromSession(session); if
+	 * (!question.isSameWriter(loginUser)) { throw new
+	 * IllegalStateException("You can only deal with articles you write!"); } return
+	 * true; }
+	 */
 	@PostMapping("/formProc")
 	public String formProc(String title, String contents, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "/users/login";
+			return "/user/login";
 		}
 
 		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
@@ -60,7 +70,7 @@ public class QuestionController {
 	@GetMapping("/{id}/show")
 	public String show(@PathVariable Long id, Model model, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "redirect:/users/login";
+			return "redirect:/user/login";
 		}
 
 		Question question = questionRepository.findOne(id);
@@ -71,43 +81,39 @@ public class QuestionController {
 
 	@GetMapping("/{id}/updateForm")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		try {
-			Question question = questionRepository.findOne(id);
-			hasPermission(session, question);
-			model.addAttribute("question", question);
-			return "/qna/updateForm";
-		} catch (IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
-			return "/users/login";
+		Question question = questionRepository.findOne(id);
+		Result result = valid(session, question);
+		if (!result.isVaild()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
+			return "/user/login";
 		}
+		model.addAttribute("question", question);
+		return "/qna/updateForm";
 	}
 
 	@PostMapping("/updateFormProc")
 	public String updateFormProc(Long id, String title, String contents, HttpSession session, Model model) {
-		try {
-			Question question = questionRepository.findOne(id);
-			hasPermission(session, question);
-			question.update(title, contents);
-			questionRepository.save(question);
-			//return String.format("redirect:/qna/%d/show", id);
-			return "redirect:/qna/{id}/show";
-		} catch (IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
-			return "redirect:/users/login";
+		Question question = questionRepository.findOne(id);
+		Result result = valid(session, question);
+		if (!result.isVaild()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
+			return "/user/login";
 		}
+		question.update(title, contents);
+		questionRepository.save(question);
+		return String.format("redirect:/qna/%d/show", id);
 	}
 
 	@PostMapping("/delete")
 	public String deleteProc(Long id, HttpSession session, Model model) {
-		try {
-			Question question = questionRepository.findOne(id);
-			hasPermission(session, question);
-			questionRepository.delete(id);
-			return "redirect:/";
-		} catch (IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
-			return "redirect:/users/login";
+		Question question = questionRepository.findOne(id);
+		Result result = valid(session, question);
+		if (!result.isVaild() ) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
+			return "/user/login";
 		}
+		questionRepository.delete(id);
+		return "redirect:/";
 	}
 
 }

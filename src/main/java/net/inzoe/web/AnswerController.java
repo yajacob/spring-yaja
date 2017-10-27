@@ -26,7 +26,7 @@ public class AnswerController {
 	@PostMapping("/reply")
 	public String replay(@PathVariable Long qid, String contents, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "/users/login";
+			return "/user/login";
 		}
 		
 		User loginUser = HttpSessionUtils.getUserFromSession(session);

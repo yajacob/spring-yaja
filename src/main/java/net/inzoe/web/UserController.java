@@ -38,11 +38,6 @@ public class UserController {
 			return "/users/login";
 		}
 		
-		if (!password.equals(user.getPassword())) {
-			System.out.println("login fail2");
-			return "/users/login";
-		}
-		
 		if(!user.matchPassword(password)) {
 			System.out.println("login fail3");
 			return "/users/login";

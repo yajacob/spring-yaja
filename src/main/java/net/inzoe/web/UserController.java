@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import net.inzoe.domain.Result;
 import net.inzoe.domain.User;
 import net.inzoe.domain.UserRepository;
 
@@ -20,11 +21,19 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@GetMapping("/form")
-	public String form() {
-		return "/user/form";
+	private Result valid(Long id, HttpSession session) {
+		if (!HttpSessionUtils.isLoginUser(session)) {
+			return Result.fail("You need to login!");
+		}
+		
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		if (!sessionedUser.matchId(id)) {
+			return Result.fail("You can update only your information!");
+		}
+		
+		return Result.ok();
 	}
-
+	
 	@GetMapping("/login")
 	public String login() {
 		return "/user/login";
@@ -56,8 +65,13 @@ public class UserController {
 		return "redirect:/";
 	}
 	
+	@GetMapping("/form")
+	public String signupForm() {
+		return "/user/form";
+	}
+
 	@PostMapping("/create")
-	public String create(User user) {
+	public String signupProc(User user) {
 		userRepository.save(user);
 		return "redirect:/user/list";
 	}
@@ -69,18 +83,11 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id}/form")
-	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		//Object tempUser = session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
-		//if (tempUser == null) {
-		if (HttpSessionUtils.isLoginUser(session)) {
-			return "redirect:/user/login";
-		}
-		
-		//User sessionedUser = (User)tempUser;
-		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
-		//if (!id.equals(sessionedUser.getId())) {
-		if (!sessionedUser.matchId(id)) {
-			throw new IllegalStateException("You can update only your information!");
+	public String updateUserForm(@PathVariable Long id, Model model, HttpSession session) {
+		Result result = valid(id, session);
+		if(!result.isVaild()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
+			return "/user/login";
 		}
 		
 		User user = userRepository.findOne(id);
@@ -89,18 +96,11 @@ public class UserController {
 	}
 	
 	@PutMapping("/{id}/update")
-	public String updateUser(@PathVariable Long id, User updatedUser, HttpSession session) {
-		//Object tempUser = session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
-		//if (tempUser == null) {
-		if (!HttpSessionUtils.isLoginUser(session)) {
-			return "redirect:/user/login";
-		}
-		
-		//User sessionedUser = (User)tempUser;
-		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
-		//if (!id.equals(sessionedUser.getId())) {
-		if (!sessionedUser.matchId(id)) {
-			throw new IllegalStateException("You can update only your information!");
+	public String updateUserProc(@PathVariable Long id, User updatedUser, HttpSession session, Model model) {
+		Result result = valid(id, session);
+		if (!result.isVaild()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
+			return "/user/login";
 		}
 		
 		User user = userRepository.findOne(id);

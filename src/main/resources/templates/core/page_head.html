@@ -47,7 +47,7 @@
 							<li><a href="https://slipp.net" target="_blank">YAJA</a></li>
 							<li><a href="https://facebook.com" target="_blank">Facebook</a></li>
 						</ul></li>
-					<li><a href="/users/list"><i
+					<li><a href="/user/list"><i
 							class="glyphicon glyphicon-user"></i></a></li>
 				</ul>
 			</div>
@@ -62,7 +62,7 @@
 					style="color: #dd1111;"></i> Home <small><i
 						class="glyphicon glyphicon-chevron-down"></i></small></a>
 				<ul class="nav dropdown-menu">
-					<li><a href="/users/profile"><i
+					<li><a href="/user/profile"><i
 							class="glyphicon glyphicon-user" style="color: #1111dd;"></i>
 							Profile</a></li>
 					<li class="nav-divider"></li>
@@ -80,11 +80,11 @@
 			<div class="collapse navbar-collapse" id="navbar-collapse2">
 				<ul class="nav navbar-nav navbar-right">
 					<li class="active"><a href="/">Posts</a></li> {{^sessionedUser}}
-					<li><a href="/users/login" role="button">Login</a></li>
-					<li><a href="/users/form" role="button">Sign Up</a></li>
+					<li><a href="/user/login" role="button">Login</a></li>
+					<li><a href="/user/form" role="button">Sign Up</a></li>
 					{{/sessionedUser}} {{#sessionedUser}}
-					<li><a href="/users/logout" role="button">Logout</a></li>
-					<li><a href="/users/{{id}}/form" role="button">Profile</a></li>
+					<li><a href="/user/logout" role="button">Logout</a></li>
+					<li><a href="/user/{{id}}/form" role="button">Profile</a></li>
 					{{/sessionedUser}}
 				</ul>
 			</div>

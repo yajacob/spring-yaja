@@ -89,7 +89,8 @@ public class QuestionController {
 			hasPermission(session, question);
 			question.update(title, contents);
 			questionRepository.save(question);
-			return String.format("redirect:/qna/%d/show", id);
+			//return String.format("redirect:/qna/%d/show", id);
+			return "redirect:/qna/{id}/show";
 		} catch (IllegalStateException e) {
 			model.addAttribute("errorMessage", e.getMessage());
 			return "redirect:/users/login";
@@ -99,7 +100,6 @@ public class QuestionController {
 	@PostMapping("/delete")
 	public String deleteProc(Long id, HttpSession session, Model model) {
 		try {
-			User loginUser = HttpSessionUtils.getUserFromSession(session);
 			Question question = questionRepository.findOne(id);
 			hasPermission(session, question);
 			questionRepository.delete(id);

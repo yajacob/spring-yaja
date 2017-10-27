@@ -64,15 +64,8 @@
 								</div>
 								<div class="article-util">
 									<ul class="article-util-list">
-										<li><a class="link-modify-article"
-											href="/qna/{{id}}/{{id}}/form">Modify</a></li>
-										<li>
-											<form class="delete-answer-form"
-												action="/qna/{{id}}/ans/{{id}}/delete" method="POST">
-												<input type="hidden" name="_method" value="DELETE">
-												<button type="submit" class="delete-answer-button">Delete</button>
-											</form>
-										</li>
+										<li><a class="link-modify-article" href="/api/qna/{{question.id}}/ans/{{id}}/modify">Modify</a></li>
+										<li><a class="link-delete-article" href="/api/qna/{{question.id}}/ans/{{id}}/delete">Delete</a></li>
 									</ul>
 								</div>
 							</article>
@@ -83,8 +76,8 @@
 									<textarea class="form-control" name="contents" id="ans_contents"
 										placeholder="Update your status"></textarea>
 								</div>
-								<button class="btn btn-success pull-right" id="answer_submit"
-									type="submit">Reply</button>
+								<button class="btn btn-success pull-right" id="btn_answer_submit"
+									type="button">Reply</button>
 								<div class="clearfix" />
 							</form>
 					</div>
@@ -112,13 +105,10 @@
 		<div class="article-util">
 		<ul class="article-util-list">
 			<li>
-				<a class="link-modify-article" href="/api/qna/updateAnswer/{3}">Modify</a>
+				<a class="link-modify-article" href="/api/qna/{3}/ans/{4}/update">Modify</a>
 			</li>
 			<li>
-				<form class="delete-answer-form" action="/api/questions/{3}/answers/{4}" method="POST">
-					<input type="hidden" name="_method" value="DELETE">
-                     <button type="submit" class="delete-answer-button">Delete</button>
-				</form>
+				<a class="link-modify-article" href="/api/qna/{3}/ans/{4}/delete">Delete</a>
 			</li>
 		</ul>
 		</div>

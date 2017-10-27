@@ -13,6 +13,7 @@ import net.inzoe.domain.Answer;
 import net.inzoe.domain.AnswerRepository;
 import net.inzoe.domain.Question;
 import net.inzoe.domain.QuestionRepository;
+import net.inzoe.domain.Result;
 import net.inzoe.domain.User;
 
 @RestController
@@ -33,24 +34,28 @@ public class ApiAnswerController {
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		Question question = questionRepository.findOne(qid);
 		Answer answer = new Answer(loginUser, question, contents);
+		question.addAnswer();
 		
 		return answerRepository.save(answer);
 	}
 	
-/*	@DeleteMapping("/{id}/delete")
+	@PostMapping("/{id}/delete")
 	public Result delete(@PathVariable Long qid, @PathVariable Long id, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session)) {
 			return Result.fail("You need to login!");
 		}
-	
+		
 		Answer answer = answerRepository.findOne(id);
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
-		if (!answer.isSameWriter(loginUser)) {
-			return Result.fail("You can delete only your articles!");
+		if(!answer.isSameWriter(loginUser)) {
+			return Result.fail("You can only delete your posts!");
 		}
 		
 		answerRepository.delete(id);
+//		Question question = questionRepository.findOne(id);
+//		question.deleteAnswer();
+//		questionRepository.save(question);
+		
 		return Result.ok();
-
-	}*/
+	}
 }

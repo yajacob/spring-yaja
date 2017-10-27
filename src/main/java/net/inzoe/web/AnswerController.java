@@ -32,6 +32,7 @@ public class AnswerController {
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		Question question = questionRepository.getOne(qid);
 		Answer newAnswer = new Answer(loginUser, question, contents);
+		question.addAnswer();
 		answerRepository.save(newAnswer);
 		
 		return "redirect:/qna/{qid}/show";

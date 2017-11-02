@@ -30,7 +30,7 @@ public class Question extends AbstractEntity {
 	@JsonProperty
 	private Integer countOfAnswer = 0;
 
-	@Column(nullable = false, length = 2000)
+	@Column(nullable = false, length = 4000)
 	@JsonProperty
 	private String contents;
 
